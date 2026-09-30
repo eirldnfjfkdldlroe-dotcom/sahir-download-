@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sahir-dowload</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Canvas Confetti CDN pour célébration de fin de téléchargement -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          animation: {
+            'text-shine': 'textShine 6s ease infinite',
+            'gradient-border': 'gradientBorder 4s linear infinite',
+            'float': 'float 5s ease-in-out infinite',
+            'pulse-slow': 'pulseGlow 6s ease-in-out infinite',
+            'radar': 'radarScan 2s linear infinite',
+            'equalizer': 'equalizer 1.2s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            textShine: {
+              '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
+              '50%': { 'background-size': '200% 200%', 'background-position': 'right center' },
+            },
+            gradientBorder: {
+              '0%': { 'background-position': '0% 50%' },
+              '50%': { 'background-position': '100% 50%' },
+              '100%': { 'background-position': '0% 50%' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: '0.35', transform: 'scale(1)' },
+              '50%': { opacity: '0.65', transform: 'scale(1.08)' },
+            },
+            radarScan: {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(360deg)' },
+            },
+            equalizer: {
+              '0%': { height: '4px' },
+              '100%': { height: '22px' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Arrière-plan animé Cyber-Luxe */
+    body {
+      background-color: #030612;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.18) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(244, 63, 94, 0.16) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(59, 130, 246, 0.10) 0px, transparent 60%),
+        radial-gradient(at 80% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 32px 32px;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    /* Glassmorphism haute fidélité */
+    .glass-card {
+      background: rgba(10, 15, 32, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65), 0 0 40px rgba(139, 92, 246, 0.05);
+    }
+    
+    .glass-input {
+      background: rgba(4, 7, 18, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    /* Effet brillance Shimmer sur les boutons */
+    .btn-shine {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-shine::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(
+        60deg,
+        rgba(255, 255, 255, 0) 20%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0) 80%
+      );
+      transform: rotate(25deg);
+      transition: all 0.75s ease;
+    }
+    .btn-shine:hover::after {
+      left: 140%;
+    }
+
+    /* Lueur Glow */
+    .glow-rose {
+      box-shadow: 0 0 30px rgba(244, 63, 94, 0.35);
+    }
+    .glow-rose:hover {
+      box-shadow: 0 0 50px rgba(244, 63, 94, 0.6), 0 0 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .glow-emerald {
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.35);
+    }
+    .glow-emerald:hover {
+      box-shadow: 0 0 50px rgba(16, 185, 129, 0.6), 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Rayures animées de la barre de progression */
+    .progress-stripes {
+      background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.15) 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 1rem 1rem;
+      animation: moveStripes 1s linear infinite;
+    }
+    @keyframes moveStripes {
+      0% { background-position: 1rem 0; }
+      100% { background-position: 0 0; }
+    }
+  </style>
+</head>
+
+<body class="text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen selection:bg-rose-500 selection:text-white">
+
+  <!-- TOP HEADER -->
+  <header class="w-full max-w-6xl mx-auto px-6 py-6 sm:py-8 flex flex-col sm:flex-row items-center justify-between gap-4 z-20 relative">
+    
+    <!-- Logo & Titre Brillant sahir-dowload -->
+    <div class="flex items-center space-x-3.5 cursor-pointer group" onclick="resetApp()">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 via-rose-500 to-amber-400 p-[2px] shadow-lg shadow-violet-500/25 group-hover:scale-105 transition duration-300">
+        <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-tr from-rose-500/20 to-violet-500/20 animate-pulse"></div>
+          <i class="fa-solid fa-cloud-arrow-down text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-violet-300 to-cyan-300 text-xl group-hover:rotate-6 transition duration-300"></i>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl sm:text-3xl font-black tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent group-hover:from-rose-400 group-hover:to-violet-400 transition duration-300">
+            sahir-dowload
+          </span>
+          <span class="text-[10px] font-black tracking-widest px-2.5 py-0.5 bg-gradient-to-r from-rose-500/20 to-violet-500/20 text-rose-300 rounded-full border border-rose-500/30 uppercase animate-pulse">
+            v3.2
+          </span>
+        </div>
+        <p class="text-xs text-slate-400 font-medium">Extracteur Universel & Moteur HLS Stream</p>
+      </div>
+    </div>
+
+    <!-- Badges Moteur & Statut -->
+    <div class="flex items-center space-x-3">
+      <div class="hidden md:flex items-center space-x-2 text-[11px] font-mono bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-slate-400">
+        <span class="text-rose-400">4K UHD</span>
+        <span>•</span>
+        <span class="text-violet-400">MP3 320k</span>
+        <span>•</span>
+        <span class="text-cyan-400">SSE Live</span>
+      </div>
+
+      <div id="statusBadge" class="flex items-center space-x-2.5 text-xs bg-slate-900/80 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full text-slate-300 shadow-md">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+        <span id="statusText" class="font-semibold">Moteur Prêt</span>
+      </div>
+    </div>
+
+  </header>
+
+  <!-- CONTENU PRINCIPAL -->
+  <main class="w-full max-w-4xl mx-auto px-6 py-4 flex-1 flex flex-col items-center justify-center space-y-8 z-10 relative">
+
+    <!-- Titre Hero avec animation de texte -->
+    <div class="text-center space-y-3.5 max-w-2xl">
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-slate-300 mb-2 shadow-inner">
+        <i class="fa-solid fa-sparkles text-amber-400 animate-spin" style="animation-duration: 4s;"></i>
+        <span>Compatible avec YouTube, TikTok, Twitter/X, Instagram, et sites obscurs</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
+        Téléchargement Multimédia <br/>
+        <span class="bg-gradient-to-r from-rose-500 via-violet-400 to-cyan-400 bg-clip-text text-transparent animate-text-shine">
+          Sans Limites
+        </span>
+      </h1>
+      <p class="text-slate-400 text-sm sm:text-base font-normal">
+        Collez n'importe quelle URL de vidéo ou page web publique. Notre scraper <span class="text-white font-semibold">Ultimate Fallback</span> assemble automatiquement le flux au format souhaité.
+      </p>
+    </div>
+
+    <!-- CARTE PRINCIPALE AVEC BORDURE GRADIENT ANIMÉE -->
+    <div class="w-full p-[1.5px] rounded-3xl bg-gradient-to-r from-violet-500/50 via-rose-500/50 to-cyan-500/50 shadow-2xl relative">
+      
+      <div class="w-full glass-card rounded-[23px] p-6 sm:p-10 relative overflow-hidden">
+        
+        <!-- Halos lumineux ambiants -->
+        <div class="absolute -top-32 -left-32 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
+        <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-rose-600/20 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
+
+        <!-- FORMULAIRE DE SAISIE DE L'URL -->
+        <form id="analyzeForm" onsubmit="handleAnalyze(event)" class="relative z-10 space-y-4">
+          
+          <div class="relative flex items-center group">
+            <div class="absolute left-5 text-slate-400 group-focus-within:text-rose-400 transition-colors text-lg pointer-events-none">
+              <i class="fa-solid fa-link"></i>
+            </div>
+            
+            <input 
+              type="url" 
+              id="urlInput"
+              required
+              placeholder="Collez ici l'URL de la vidéo ou du site (YouTube, TikTok, Twitter...)..."
+              class="w-full glass-input focus:border-rose-500 focus:ring-4 focus:ring-rose-500/25 text-white placeholder-slate-500 text-sm sm:text-base rounded-2xl pl-14 pr-28 py-4 sm:py-5 outline-none transition-all duration-300"
+            />
+
+            <!-- Bouton Coller Rapide -->
+            <button 
+              type="button" 
+              onclick="pasteFromClipboard()"
+              class="absolute right-3.5 px-3.5 py-2 text-xs font-bold text-slate-300 hover:text-white bg-slate-800/90 hover:bg-slate-700 border border-white/10 rounded-xl transition duration-200 flex items-center space-x-1.5 shadow-sm hover:scale-105 active:scale-95"
+            >
+              <i class="fa-regular fa-clipboard text-violet-400"></i>
+              <span>Coller</span>
+            </button>
+          </div>
+
+          <!-- Bouton Analyser Glow avec Shimmer -->
+          <button 
+            type="submit" 
+            id="analyzeBtn"
+            class="w-full bg-gradient-to-r from-rose-600 via-violet-600 to-rose-600 hover:from-rose-500 hover:to-violet-500 text-white font-black text-base rounded-2xl py-4 sm:py-4.5 px-6 glow-rose btn-shine hover:scale-[1.008] active:scale-[0.99] transition-all duration-300 flex items-center justify-center space-x-2.5 shadow-lg"
+          >
+            <span id="analyzeBtnText" class="flex items-center space-x-2">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Analyser le média</span>
+            </span>
+            <svg id="analyzeBtnSpinner" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </button>
+
+        </form>
+
+        <!-- SCANNER RADAR CYBER (Pendant l'analyse) -->
+        <div id="radarScanner" class="hidden mt-8 pt-8 border-t border-white/10 text-center space-y-4 animate-fade-in">
+          <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-2 border-violet-500/20"></div>
+            <div class="absolute inset-2 rounded-full border-2 border-rose-500/30"></div>
+            <div class="absolute inset-0 rounded-full border-t-2 border-rose-500 animate-radar"></div>
+            <i class="fa-solid fa-fingerprint text-2xl text-slate-300 animate-pulse"></i>
+          </div>
+          <div>
+            <p id="radarStepText" class="text-sm font-bold text-white">Recherche et extraction des flux médias...</p>
+            <p class="text-xs text-slate-400 mt-0.5">Scraping HLS et inspection des flux en cours</p>
+          </div>
+        </div>
+
+        <!-- ÉTAPE 2 & 3 : APERÇU RICHE + SÉLECTEURS PILULES -->
+        <div id="optionsPanel" class="hidden mt-8 pt-8 border-t border-white/10 space-y-6 transition-all duration-500">
+          
+          <!-- Carte d'Aperçu Média -->
+          <div class="flex flex-col sm:flex-row items-center gap-5 bg-slate-950/80 p-4 sm:p-5 rounded-2xl border border-white/10 shadow-xl group hover:border-white/20 transition-all">
+            
+            <div class="relative w-full sm:w-52 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-slate-900 border border-white/10 group-hover:scale-[1.02] transition duration-300">
+              <img id="previewThumb" src="" alt="Miniature" class="w-full h-full object-cover" />
+              <span id="previewDuration" class="absolute bottom-2 right-2 px-2.5 py-0.5 text-[11px] font-mono font-bold bg-black/85 backdrop-blur-md text-white rounded-md border border-white/10"></span>
+            </div>
+
+            <div class="flex-1 min-w-0 space-y-2 text-center sm:text-left w-full">
+              <h3 id="previewTitle" class="text-base sm:text-lg font-bold text-white line-clamp-2 leading-snug">Titre du média</h3>
+              <p id="previewAuthor" class="text-xs text-slate-400"><i class="fa-solid fa-circle-nodes mr-1 text-violet-400"></i> Source identifiée</p>
+              
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 pt-1">
+                <span class="inline-flex items-center text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full font-medium">
+                  <i class="fa-solid fa-check mr-1.5 text-[10px]"></i> Flux prêt pour encodage
+                </span>
+                
+                <!-- Bouton Télécharger la miniature HD -->
+                <button 
+                  type="button" 
+                  id="btnDownloadThumb"
+                  onclick="downloadThumbnail()"
+                  class="inline-flex items-center space-x-1.5 text-xs text-slate-200 hover:text-white bg-slate-800/90 hover:bg-slate-700 border border-white/10 px-3.5 py-1 rounded-full transition shadow-sm hover:scale-105 active:scale-95"
+                >
+                  <i class="fa-regular fa-image text-rose-400"></i>
+                  <span>Télécharger la miniature HD</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- SÉLECTEURS EN PILULES AVEC EFFET EQUALIZER AUDIO -->
+          <div class="space-y-5">
+            
+            <!-- Type : Pilules Vidéo / Audio -->
+            <div>
+              <div class="flex items-center justify-between mb-2.5">
+                <label class="text-xs font-black uppercase tracking-wider text-slate-400">
+                  1. Format de conversion
+                </label>
+                <!-- Animation Equalizer si Audio actif -->
+                <div id="audioWaveContainer" class="hidden flex items-center space-x-1 h-5">
+                  <span class="w-1 bg-rose-500 rounded-full animate-equalizer" style="animation-delay: 0.1s;"></span>
+                  <span class="w-1 bg-violet-400 rounded-full animate-equalizer" style="animation-delay: 0.3s;"></span>
+                  <span class="w-1 bg-cyan-400 rounded-full animate-equalizer" style="animation-delay: 0.2s;"></span>
+                  <span class="w-1 bg-emerald-400 rounded-full animate-equalizer" style="animation-delay: 0.4s;"></span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 p-1.5 bg-slate-950/80 rounded-2xl border border-white/10">
+                <button 
+                  type="button" 
+                  id="pillVideo"
+                  onclick="setType('video')"
+                  class="py-3 px-4 rounded-xl font-black text-sm flex items-center justify-center space-x-2 transition-all bg-gradient-to-r from-rose-500 to-violet-600 text-white shadow-lg shadow-rose-500/25"
+                >
+                  <i class="fa-solid fa-film"></i>
+                  <span>Vidéo MP4 / WEBM</span>
+                </button>
+                <button 
+                  type="button" 
+                  id="pillAudio"
+                  onclick="setType('audio')"
+                  class="py-3 px-4 rounded-xl font-bold text-sm text-slate-400 hover:text-white transition-all flex items-center justify-center space-x-2"
+                >
+                  <i class="fa-solid fa-music"></i>
+                  <span>Audio MP3 / M4A</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Grille Format & Qualité -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <!-- Format -->
+              <div>
+                <label class="block text-xs font-black uppercase tracking-wider text-slate-400 mb-2">
+                  2. Conteneur de fichier
+                </label>
+                <div class="relative">
+                  <select 
+                    id="formatSelect"
+                    class="w-full appearance-none glass-input text-white font-semibold text-sm rounded-2xl px-4 py-3.5 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20 outline-none cursor-pointer transition shadow-inner"
+                  >
+                    <!-- Injecté par JS -->
+                  </select>
+                  <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Qualité -->
+              <div>
+                <label id="qualityLabel" class="block text-xs font-black uppercase tracking-wider text-slate-400 mb-2">
+                  3. Résolution vidéo
+                </label>
+                <div class="relative">
+                  <select 
+                    id="qualitySelect"
+                    class="w-full appearance-none glass-input text-white font-semibold text-sm rounded-2xl px-4 py-3.5 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/20 outline-none cursor-pointer transition shadow-inner"
+                  >
+                    <!-- Injecté par JS -->
+                  </select>
+                  <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- GROS BOUTON TÉLÉCHARGEMENT FINAL -->
+            <div class="pt-2">
+              <button 
+                type="button" 
+                id="downloadBtn"
+                onclick="startProcessing()"
+                class="w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black text-base rounded-2xl py-4.5 px-6 glow-emerald btn-shine hover:scale-[1.008] active:scale-[0.99] transition-all duration-300 flex items-center justify-center space-x-2.5 shadow-xl"
+              >
+                <span id="downloadBtnText" class="flex items-center space-x-2">
+                  <i class="fa-solid fa-cloud-arrow-down text-lg"></i>
+                  <span>Démarrer le téléchargement</span>
+                </span>
+                <svg id="downloadBtnSpinner" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </button>
+            </div>
+
+            <!-- BARRE DE PROGRESSION EN TEMPS RÉEL (SSE) -->
+            <div id="liveProgressContainer" class="hidden space-y-3 pt-3 animate-fade-in">
+              <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+                <span id="livePhaseText" class="flex items-center space-x-2 text-violet-300 font-semibold">
+                  <i class="fa-solid fa-spinner fa-spin mr-1"></i>
+                  <span>Initialisation du téléchargement...</span>
+                </span>
+                <span id="livePercentText" class="font-mono text-emerald-400 text-sm font-black">0%</span>
+              </div>
+
+              <!-- Barre animée à rayures et gradient -->
+              <div class="w-full bg-slate-950 rounded-full h-3.5 overflow-hidden p-0.5 border border-white/10 shadow-inner">
+                <div id="liveProgressBar" class="bg-gradient-to-r from-violet-500 via-rose-500 to-emerald-400 h-full rounded-full transition-all duration-300 w-0 progress-stripes shadow-lg shadow-emerald-500/20"></div>
+              </div>
+
+              <!-- Vitesse & ETA -->
+              <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+                <span id="liveSpeedText"><i class="fa-solid fa-gauge-high mr-1 text-cyan-400"></i> -- Mo/s</span>
+                <span id="liveEtaText"><i class="fa-regular fa-clock mr-1 text-amber-400"></i> Temps restant : --</span>
+              </div>
+            </div>
+
+            <!-- CARTE SUCCÈS DIRECT -->
+            <div id="readyCard" class="hidden p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-left animate-fade-in">
+              <div class="flex items-center space-x-3.5">
+                <div class="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg flex-shrink-0">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                  <p class="text-sm font-black text-emerald-300">Fichier finalisé & transmis !</p>
+                  <p id="readyFileSize" class="text-xs text-emerald-200/80">Le téléchargement a démarré sur votre appareil.</p>
+                </div>
+              </div>
+              <a 
+                id="manualDownloadLink" 
+                href="#" 
+                class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black rounded-xl transition flex items-center space-x-2 shadow-lg hover:scale-105 active:scale-95"
+              >
+                <i class="fa-solid fa-arrow-rotate-right"></i>
+                <span>Télécharger à nouveau</span>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SECTION HISTORIQUE LOCAL (LocalStorage) -->
+    <div id="historySection" class="w-full glass-card rounded-3xl p-6 sm:p-8 space-y-4">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3.5">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-7 h-7 rounded-lg bg-violet-500/20 text-violet-400 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <h2 class="text-base font-bold text-white tracking-tight">Derniers téléchargements</h2>
+        </div>
+        <button 
+          onclick="clearHistory()" 
+          class="text-xs font-semibold text-slate-400 hover:text-rose-400 transition flex items-center space-x-1.5"
+        >
+          <i class="fa-regular fa-trash-can"></i>
+          <span>Vider l'historique</span>
+        </button>
+      </div>
+
+      <div id="historyList" class="space-y-2.5">
+        <p id="emptyHistoryMsg" class="text-xs text-slate-500 text-center py-6">Aucun téléchargement récent pour le moment.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="w-full max-w-6xl mx-auto px-6 py-6 text-center text-xs text-slate-600 border-t border-white/5 z-10 relative">
+    <p>sahir-dowload • Moteur FastAPI, yt-dlp & BeautifulSoup4 • Usage personnel uniquement.</p>
+  </footer>
+
+  <!-- CONTENEUR DES TOASTS FLOTTANTS -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2.5 pointer-events-none"></div>
+
+  <!-- SCRIPT LOGIQUE JAVASCRIPT -->
+  <script>
+    let currentMetadata = null;
+    let selectedType = 'video';
+    let currentEventSource = null;
+
+    const urlInput = document.getElementById('urlInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const analyzeBtnText = document.getElementById('analyzeBtnText');
+    const analyzeBtnSpinner = document.getElementById('analyzeBtnSpinner');
+    const radarScanner = document.getElementById('radarScanner');
+    const radarStepText = document.getElementById('radarStepText');
+
+    const optionsPanel = document.getElementById('optionsPanel');
+    const previewThumb = document.getElementById('previewThumb');
+    const previewDuration = document.getElementById('previewDuration');
+    const previewTitle = document.getElementById('previewTitle');
+    const previewAuthor = document.getElementById('previewAuthor');
+    const btnDownloadThumb = document.getElementById('btnDownloadThumb');
+
+    const pillVideo = document.getElementById('pillVideo');
+    const pillAudio = document.getElementById('pillAudio');
+    const audioWaveContainer = document.getElementById('audioWaveContainer');
+    const formatSelect = document.getElementById('formatSelect');
+    const qualitySelect = document.getElementById('qualitySelect');
+    const qualityLabel = document.getElementById('qualityLabel');
+
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadBtnText = document.getElementById('downloadBtnText');
+    const downloadBtnSpinner = document.getElementById('downloadBtnSpinner');
+
+    const liveProgressContainer = document.getElementById('liveProgressContainer');
+    const liveProgressBar = document.getElementById('liveProgressBar');
+    const livePercentText = document.getElementById('livePercentText');
+    const liveSpeedText = document.getElementById('liveSpeedText');
+    const liveEtaText = document.getElementById('liveEtaText');
+    const livePhaseText = document.getElementById('livePhaseText');
+
+    const readyCard = document.getElementById('readyCard');
+    const readyFileSize = document.getElementById('readyFileSize');
+    const manualDownloadLink = document.getElementById('manualDownloadLink');
+    const statusText = document.getElementById('statusText');
+
+    // --- 1. SYSTÈME DE TOASTS AVEC PROGRESSION ---
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto flex items-center space-x-3 px-4 py-3 rounded-2xl border text-xs font-bold shadow-2xl transition-all duration-300 transform translate-y-4 opacity-0 max-w-sm backdrop-blur-xl relative overflow-hidden`;
+
+      let icon = '<i class="fa-solid fa-circle-info text-cyan-400 text-sm"></i>';
+      let borderClass = 'bg-slate-900/90 border-white/10 text-slate-200';
+      let barColor = 'bg-cyan-400';
+
+      if (type === 'success') {
+        icon = '<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>';
+        borderClass = 'bg-emerald-950/90 border-emerald-500/40 text-emerald-200';
+        barColor = 'bg-emerald-400';
+      } else if (type === 'error') {
+        icon = '<i class="fa-solid fa-circle-exclamation text-rose-400 text-sm"></i>';
+        borderClass = 'bg-rose-950/90 border-rose-500/40 text-rose-200';
+        barColor = 'bg-rose-400';
+      }
+
+      toast.className += ` ${borderClass}`;
+      toast.innerHTML = `
+        ${icon}
+        <span class="flex-1">${message}</span>
+        <div class="absolute bottom-0 left-0 h-[2px] ${barColor} w-full transition-all duration-[3800ms] ease-linear" style="width: 100%;"></div>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+        const bar = toast.querySelector('div');
+        if (bar) bar.style.width = '0%';
+      }, 20);
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // --- 2. VÉRIFICATION DU SERVEUR ---
+    async function checkServerStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        if (data.status === 'online') {
+          statusText.innerText = data.ffmpeg_available 
+            ? 'Moteur Prêt (FFmpeg OK)' 
+            : 'Moteur Prêt (sans FFmpeg)';
+        }
+      } catch (e) {
+        statusText.innerText = 'Serveur Déconnecté';
+      }
+    }
+    checkServerStatus();
+
+    async function pasteFromClipboard() {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          urlInput.value = text;
+          urlInput.focus();
+          showToast("Lien collé depuis le presse-papier", "info");
+        }
+      } catch (err) {
+        showToast("Impossible d'accéder au presse-papier", "error");
+      }
+    }
+
+    function formatTime(seconds) {
+      if (!seconds) return '';
+      const min = Math.floor(seconds / 60);
+      const sec = Math.floor(seconds % 60);
+      return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    }
+
+    function formatBytes(bytes) {
+      if (!+bytes) return '0 Octets';
+      const k = 1024;
+      const sizes = ['Octets', 'Ko', 'Mo', 'Go'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+    }
+
+    function resetApp() {
+      urlInput.value = '';
+      optionsPanel.classList.add('hidden');
+      radarScanner.classList.add('hidden');
+      readyCard.classList.add('hidden');
+      liveProgressContainer.classList.add('hidden');
+      if (currentEventSource) currentEventSource.close();
+      currentMetadata = null;
+    }
+
+    // --- 3. ÉTAPE 1 : ANALYSE DU LIEN AVEC RADAR ANIMÉ ---
+    async function handleAnalyze(e) {
+      e.preventDefault();
+      const url = urlInput.value.trim();
+      if (!url) return;
+
+      optionsPanel.classList.add('hidden');
+      readyCard.classList.add('hidden');
+      liveProgressContainer.classList.add('hidden');
+      radarScanner.classList.remove('hidden');
+
+      analyzeBtn.disabled = true;
+      analyzeBtn.classList.add('opacity-75', 'cursor-not-allowed');
+      analyzeBtnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Analyse en cours...';
+      analyzeBtnSpinner.classList.remove('hidden');
+
+      const radarSteps = [
+        "Résolution des métadonnées du site...",
+        "Inspection des flux HLS (.m3u8) et MP4...",
+        "Détection des résolutions vidéo HD..."
+      ];
+      let stepIdx = 0;
+      const radarTimer = setInterval(() => {
+        stepIdx = (stepIdx + 1) % radarSteps.length;
+        radarStepText.innerText = radarSteps[stepIdx];
+      }, 1800);
+
+      try {
+        const resp = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: url })
+        });
+
+        clearInterval(radarTimer);
+        const result = await resp.json();
+
+        if (!resp.ok) {
+          throw new Error(result.detail || "Impossible d'extraire la vidéo.");
+        }
+
+        currentMetadata = result.data;
+        radarScanner.classList.add('hidden');
+        displayMetadata(currentMetadata);
+        showToast("Média analysé avec succès !", "success");
+
+      } catch (err) {
+        clearInterval(radarTimer);
+        radarScanner.classList.add('hidden');
+        showToast(err.message, "error");
+      } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        analyzeBtnText.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Analyser le média';
+        analyzeBtnSpinner.classList.add('hidden');
+      }
+    }
+
+    function displayMetadata(data) {
+      previewTitle.innerText = data.title || "Média trouvé";
+      previewAuthor.innerText = data.uploader ? `Source : ${data.uploader}` : "";
+
+      if (data.thumbnail) {
+        previewThumb.src = data.thumbnail;
+        previewThumb.parentElement.classList.remove('hidden');
+        if (btnDownloadThumb) btnDownloadThumb.classList.remove('hidden');
+      } else {
+        previewThumb.parentElement.classList.add('hidden');
+        if (btnDownloadThumb) btnDownloadThumb.classList.add('hidden');
+      }
+
+      previewDuration.innerText = data.duration ? formatTime(data.duration) : '';
+      
+      setType('video');
+      optionsPanel.classList.remove('hidden');
+      optionsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Basculement Vidéo / Audio avec Equalizer
+    function setType(type) {
+      selectedType = type;
+
+      if (type === 'video') {
+        pillVideo.className = "py-3 px-4 rounded-xl font-black text-sm flex items-center justify-center space-x-2 transition-all bg-gradient-to-r from-rose-500 to-violet-600 text-white shadow-lg shadow-rose-500/25";
+        pillAudio.className = "py-3 px-4 rounded-xl font-bold text-sm text-slate-400 hover:text-white transition-all flex items-center justify-center space-x-2";
+        audioWaveContainer.classList.add('hidden');
+
+        formatSelect.innerHTML = `
+          <option value="mp4" selected>MP4 (Recommandé - Haute Compatibilité)</option>
+          <option value="webm">WEBM (Navigateurs Modernes)</option>
+        `;
+
+        qualityLabel.innerText = "3. Résolution vidéo";
+        let qualHtml = '';
+        if (currentMetadata && currentMetadata.resolutions && currentMetadata.resolutions.length > 0) {
+          currentMetadata.resolutions.forEach(r => {
+            qualHtml += `<option value="${r.value}">${r.label}</option>`;
+          });
+        } else {
+          qualHtml = `<option value="best" selected>⭐ Meilleure qualité disponible</option>`;
+        }
+        qualitySelect.innerHTML = qualHtml;
+
+      } else {
+        pillAudio.className = "py-3 px-4 rounded-xl font-black text-sm flex items-center justify-center space-x-2 transition-all bg-gradient-to-r from-rose-500 to-violet-600 text-white shadow-lg shadow-rose-500/25";
+        pillVideo.className = "py-3 px-4 rounded-xl font-bold text-sm text-slate-400 hover:text-white transition-all flex items-center justify-center space-x-2";
+        audioWaveContainer.classList.remove('hidden');
+
+        formatSelect.innerHTML = `
+          <option value="mp3" selected>MP3 (Format Audio Standard)</option>
+          <option value="m4a">M4A (Haute Définition AAC)</option>
+          <option value="wav">WAV (Qualité Studio non compressée)</option>
+        `;
+
+        qualityLabel.innerText = "3. Débit Audio (Bitrate)";
+        qualitySelect.innerHTML = `
+          <option value="320">320 kbps (Qualité Maximale)</option>
+          <option value="256">256 kbps (Très Haute)</option>
+          <option value="192" selected>192 kbps (Recommandé)</option>
+          <option value="128">128 kbps (Format Léger)</option>
+        `;
+      }
+    }
+
+    // --- 4. TÉLÉCHARGEMENT AVEC SSE TEMPS RÉEL ET CONFETTI ---
+    async function startProcessing() {
+      if (!currentMetadata) return;
+
+      const payload = {
+        url: currentMetadata.webpage_url || urlInput.value.trim(),
+        media_type: selectedType,
+        format: formatSelect.value,
+        quality: qualitySelect.value,
+      };
+
+      readyCard.classList.add('hidden');
+      liveProgressContainer.classList.remove('hidden');
+
+      downloadBtn.disabled = true;
+      downloadBtn.classList.add('opacity-70', 'cursor-not-allowed');
+      downloadBtnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Initialisation...';
+      downloadBtnSpinner.classList.remove('hidden');
+
+      liveProgressBar.style.width = '0%';
+      livePercentText.innerText = '0%';
+      liveSpeedText.innerHTML = '<i class="fa-solid fa-gauge-high mr-1 text-cyan-400"></i> -- Mo/s';
+      liveEtaText.innerHTML = '<i class="fa-regular fa-clock mr-1 text-amber-400"></i> Temps restant : --';
+
+      try {
+        const resp = await fetch('/api/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          throw new Error(data.detail || "Échec d'initialisation.");
+        }
+
+        listenProgress(data.task_id);
+
+      } catch (err) {
+        showToast(err.message, "error");
+        liveProgressContainer.classList.add('hidden');
+        downloadBtn.disabled = false;
+        downloadBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+        downloadBtnText.innerHTML = '<i class="fa-solid fa-cloud-arrow-down mr-2 text-lg"></i> Démarrer le téléchargement';
+        downloadBtnSpinner.classList.add('hidden');
+      }
+    }
+
+    function listenProgress(taskId) {
+      if (currentEventSource) currentEventSource.close();
+
+      currentEventSource = new EventSource(`/api/progress/${taskId}`);
+
+      currentEventSource.onmessage = function(event) {
+        const info = JSON.parse(event.data);
+
+        if (info.status === 'downloading') {
+          const pct = Math.max(info.percent || 0, 5);
+          liveProgressBar.style.width = pct + '%';
+          livePercentText.innerText = Math.round(pct) + '%';
+          liveSpeedText.innerHTML = `<i class="fa-solid fa-gauge-high mr-1 text-cyan-400"></i> ${info.speed || '--'}`;
+          liveEtaText.innerHTML = `<i class="fa-regular fa-clock mr-1 text-amber-400"></i> Temps restant : ${info.eta || '--'}`;
+          livePhaseText.innerHTML = `<i class="fa-solid fa-bolt mr-1.5 text-rose-400"></i> ${info.phase || 'Téléchargement...'}`;
+        }
+        else if (info.status === 'processing') {
+          liveProgressBar.style.width = '96%';
+          livePercentText.innerText = '96%';
+          livePhaseText.innerHTML = `<i class="fa-solid fa-gears fa-spin mr-1.5 text-violet-400"></i> ${info.phase || 'Assemblage FFmpeg...'}`;
+        }
+        else if (info.status === 'completed') {
+          currentEventSource.close();
+          liveProgressBar.style.width = '100%';
+          livePercentText.innerText = '100%';
+          livePhaseText.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5 text-emerald-400"></i> Fichier assemblé avec succès !`;
+
+          downloadBtn.disabled = false;
+          downloadBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+          downloadBtnText.innerHTML = '<i class="fa-solid fa-arrow-rotate-right mr-2 text-lg"></i> Télécharger à nouveau';
+          downloadBtnSpinner.classList.add('hidden');
+
+          readyFileSize.innerText = `Poids : ${formatBytes(info.filesize)} • Qualité vérifiée`;
+          manualDownloadLink.href = info.download_url;
+          readyCard.classList.remove('hidden');
+
+          // Déclencher le téléchargement automatique dans le navigateur
+          triggerBrowserDownload(info.download_url);
+          showToast("Téléchargement finalisé avec succès !", "success");
+
+          // Explosion de Confettis Célébration
+          if (typeof confetti === 'function') {
+            confetti({
+              particleCount: 80,
+              spread: 70,
+              origin: { y: 0.65 }
+            });
+          }
+
+          // Enregistrer dans l'historique local
+          saveToHistory({
+            title: info.title || currentMetadata.title || "Média téléchargé",
+            thumbnail: currentMetadata.thumbnail,
+            format: formatSelect.value.toUpperCase(),
+            quality: qualitySelect.value,
+            filesize: formatBytes(info.filesize),
+            url: info.download_url,
+            date: new Date().toLocaleDateString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+          });
+        }
+        else if (info.status === 'error') {
+          currentEventSource.close();
+          liveProgressContainer.classList.add('hidden');
+          downloadBtn.disabled = false;
+          downloadBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+          downloadBtnText.innerHTML = '<i class="fa-solid fa-arrow-rotate-right mr-2 text-lg"></i> Réessayer';
+          downloadBtnSpinner.classList.add('hidden');
+          showToast(info.error || "Erreur de téléchargement", "error");
+        }
+      };
+
+      currentEventSource.onerror = function() {
+        currentEventSource.close();
+      };
+    }
+
+    function triggerBrowserDownload(url) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function downloadThumbnail() {
+      if (!currentMetadata || !currentMetadata.thumbnail) {
+        showToast("Aucune miniature disponible pour ce lien", "error");
+        return;
+      }
+      const title = currentMetadata.title || "miniature";
+      const thumbUrl = `/api/download-thumbnail?url=${encodeURIComponent(currentMetadata.thumbnail)}&title=${encodeURIComponent(title)}`;
+      triggerBrowserDownload(thumbUrl);
+      showToast("Téléchargement de la miniature HD en cours...", "info");
+    }
+
+    // --- 5. GESTION DE L'HISTORIQUE (LocalStorage) ---
+    const STORAGE_KEY = 'sahir_download_history_v3';
+
+    function loadHistory() {
+      const historyList = document.getElementById('historyList');
+      const emptyMsg = document.getElementById('emptyHistoryMsg');
+      const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+      if (items.length === 0) {
+        emptyMsg.classList.remove('hidden');
+        historyList.innerHTML = '';
+        historyList.appendChild(emptyMsg);
+        return;
+      }
+
+      emptyMsg.classList.add('hidden');
+      historyList.innerHTML = '';
+
+      items.forEach((item, index) => {
+        const el = document.createElement('div');
+        el.className = 'flex items-center justify-between p-3.5 rounded-2xl bg-slate-950/70 border border-white/5 hover:border-white/15 transition-all gap-3.5 group';
+        el.innerHTML = `
+          <div class="flex items-center space-x-3.5 min-w-0">
+            ${item.thumbnail ? `<img src="${item.thumbnail}" class="w-14 h-11 object-cover rounded-xl bg-slate-900 flex-shrink-0 border border-white/10 group-hover:scale-105 transition duration-200" />` : '<div class="w-14 h-11 bg-slate-800 rounded-xl flex items-center justify-center flex-shrink-0 text-slate-400"><i class="fa-solid fa-play"></i></div>'}
+            <div class="min-w-0">
+              <p class="text-xs sm:text-sm font-bold text-white truncate max-w-xs sm:max-w-md">${item.title}</p>
+              <div class="flex items-center space-x-2 text-[10px] text-slate-400 mt-0.5">
+                <span class="px-2 py-0.5 rounded-md bg-white/10 text-slate-200 font-mono font-bold">${item.format}</span>
+                <span>•</span>
+                <span>${item.filesize}</span>
+                <span>•</span>
+                <span>${item.date}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 flex-shrink-0">
+            <a href="${item.url}" class="px-3.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-200 transition flex items-center space-x-1.5 border border-white/10 shadow-sm">
+              <i class="fa-solid fa-download text-[11px] text-cyan-400"></i>
+              <span class="hidden sm:inline">Récupérer</span>
+            </a>
+            <button onclick="removeHistoryItem(${index})" class="p-1.5 text-slate-500 hover:text-rose-400 transition text-xs">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        `;
+        historyList.appendChild(el);
+      });
+    }
+
+    function saveToHistory(item) {
+      let items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      items.unshift(item);
+      if (items.length > 8) items = items.slice(0, 8);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      loadHistory();
+    }
+
+    function removeHistoryItem(index) {
+      let items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      items.splice(index, 1);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      loadHistory();
+      showToast("Élément retiré de l'historique", "info");
+    }
+
+    function clearHistory() {
+      localStorage.removeItem(STORAGE_KEY);
+      loadHistory();
+      showToast("Historique effacé", "info");
+    }
+
+    loadHistory();
+  </script>
+
+</body>
+</html>
