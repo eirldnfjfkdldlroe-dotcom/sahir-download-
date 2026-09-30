@@ -117,27 +117,43 @@ def is_direct_media_url(url: str) -> bool:
 
 
 def get_base_ytdlp_opts(url: str) -> dict:
-    """Configuration de base sécurisée et anonymisée pour yt-dlp."""
+    """Configuration de base sécurisée, anonymisée et optimisée pour yt-dlp."""
     referer = get_dynamic_referer(url)
-    return {
+    is_yt = any(d in url.lower() for d in ("youtube.com", "youtu.be"))
+
+    opts = {
         "quiet": True,
         "no_warnings": True,
         "nocheckcertificate": True,
         "noplaylist": True,
         "ignoreerrors": False,
         "restrictfilenames": True,
-        # Sécurité critique : Ne jamais générer la miniature lors du téléchargement vidéo
         "writethumbnail": False,
         "write_all_thumbnails": False,
-        "hls_prefer_native": False,  # FFmpeg gère les flux HLS m3u8 pour un assemblage parfait
-        "http_headers": {
+        "hls_prefer_native": False,
+        "geo_bypass": True,
+    }
+
+    if is_yt:
+        # Bypasses spécifiques pour YouTube sur serveurs Cloud (Render/AWS)
+        # On utilise les clients mobiles Android/iOS pour éviter le blocage "bot"
+        opts["extractor_args"] = {
+            "youtube": {
+                "player_client": ["android", "ios", "mweb", "web_creator"],
+                "player_skip": ["webpage", "configs"],
+            }
+        }
+    else:
+        # Pour les sites tiers et obscurs, on injecte les en-têtes Chrome et le Referer
+        opts["http_headers"] = {
             "User-Agent": CHROME_USER_AGENT,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
             "Referer": referer,
             "Sec-Fetch-Mode": "navigate",
-        },
-    }
+        }
+
+    return opts
 
 
 # --- 4. LE MOTEUR "ULTIMATE FALLBACK" (BeautifulSoup4) ---
@@ -294,11 +310,13 @@ def perform_analysis(url: str) -> dict:
             }
 
     # 1. Tentative avec yt-dlp directement
+    initial_error_msg = None
     if not info:
         try:
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(clean_url, download=False)
         except Exception as initial_err:
+            initial_error_msg = str(initial_err)
             print(f"[Analyse] yt-dlp direct a échoué ({initial_err}). Activation du Fallback...")
 
             # 2. Scraper BeautifulSoup
@@ -308,7 +326,7 @@ def perform_analysis(url: str) -> dict:
             for cand in candidates:
                 try:
                     cand_opts = get_base_ytdlp_opts(cand)
-                    cand_opts["http_headers"]["Referer"] = clean_url
+                    cand_opts.setdefault("http_headers", {})["Referer"] = clean_url
                     with yt_dlp.YoutubeDL(cand_opts) as ydl:
                         cand_info = ydl.extract_info(cand, download=False)
                         if cand_info:
@@ -333,7 +351,12 @@ def perform_analysis(url: str) -> dict:
                 }
 
     if not info:
-        raise ValueError("Aucune vidéo détectée sur cette page publique.")
+        if initial_error_msg:
+            first_line = initial_error_msg.split("\n")[0]
+            if "Sign in to confirm you're not a bot" in initial_error_msg:
+                raise ValueError("YouTube bloque temporairement les serveurs cloud gratuits (protection anti-bot). Astuce : essayez avec TikTok/Twitter/Instagram ou lancez le site en local via start.bat pour 0 blocage.")
+            raise ValueError(f"Impossible d'extraire la vidéo : {first_line}")
+        raise ValueError("Aucune vidéo ou flux média exploitable n'a été détecté sur cette page.")
 
     final_title = info.get("title")
     final_thumb = info.get("thumbnail")

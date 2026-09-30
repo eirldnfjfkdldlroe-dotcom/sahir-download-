@@ -1,8 +1,9 @@
 FROM python:3.12-slim
 
-# Installation de FFmpeg et des utilitaires nécessaires
+# Installation de FFmpeg, Node.js (pour les challenges JS yt-dlp) et des utilitaires nécessaires
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
+    nodejs \
     ca-certificates \
     curl \
     && rm -rf /var/lib/apt/lists/*
