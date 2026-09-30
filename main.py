@@ -589,11 +589,23 @@ def purge_old_temp_files(max_age_seconds: int = 1800):
 
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
-    """Sert l'interface Sahir Download."""
-    index_file = TEMPLATES_DIR / "index.html"
-    if not index_file.exists():
-        raise HTTPException(status_code=404, detail="Interface introuvable.")
-    return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
+    """Sert l'interface Sahir Download avec détection automatique de l'emplacement."""
+    possible_paths = [
+        TEMPLATES_DIR / "index.html",
+        BASE_DIR / "index.html",
+        Path("templates/index.html"),
+        Path("index.html"),
+    ]
+    for p in possible_paths:
+        if p.exists() and p.is_file():
+            return HTMLResponse(content=p.read_text(encoding="utf-8"))
+
+    # Recherche récursive dans le dossier de l'application
+    found = list(BASE_DIR.glob("**/index.html"))
+    if found:
+        return HTMLResponse(content=found[0].read_text(encoding="utf-8"))
+
+    raise HTTPException(status_code=404, detail="Interface introuvable. Veuillez vous assurer que le fichier index.html est présent dans le dépôt.")
 
 
 @app.get("/api/status")
